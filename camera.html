@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eye Tracker - Camera</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+            background: #f5f5f5;
+        }
+        #video {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 8px;
+            background: #000;
+            margin: 20px auto;
+            display: block;
+        }
+        #canvas {
+            display: none;
+        }
+        .status {
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 600px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button.stop {
+            background: #f44336;
+        }
+        button.stop:hover {
+            background: #da190b;
+        }
+        .info {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Eye Tracker Camera</h1>
+    <div id="status" class="status info">Requesting camera access...</div>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+    
+    <div>
+        <button id="stopBtn" class="stop" style="display: none;">Stop Tracking</button>
+    </div>
+    
+    <div class="info">
+        <h3>Instructions:</h3>
+        <ul>
+            <li>Click "Allow" when prompted for camera access</li>
+            <li>Position yourself so your face is clearly visible</li>
+            <li>Look up to scroll up, look down to scroll down</li>
+            <li>Close this window to stop tracking</li>
+        </ul>
+    </div>
+    
+    <script src="camera.js"></script>
+</body>
+</html>
+

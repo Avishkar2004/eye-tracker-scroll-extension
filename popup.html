@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eye Tracker</title>
+    <style>
+        body {
+            width: 400px;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        #video {
+            width: 100%;
+            border-radius: 8px;
+            background: #000;
+        }
+        #canvas {
+            display: none;
+        }
+        .controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button.stop {
+            background: #f44336;
+        }
+        button.stop:hover {
+            background: #da190b;
+        }
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        .settings {
+            margin-top: 15px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+        .settings label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        .settings input {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Eye Tracker Scroll</h2>
+    <p style="font-size: 12px; color: #666;">Click "Start Tracking" to open the camera window</p>
+    
+    <div class="controls">
+        <button id="startBtn">Start Tracking</button>
+    </div>
+    
+    <div id="status" class="status">Loading...</div>
+    <div id="debug" style="margin-top: 10px; padding: 5px; background: #fff3cd; border-radius: 4px; font-size: 11px; display: none;">
+        <strong>Debug Info:</strong><br>
+        <span id="debugText"></span>
+    </div>
+    
+    <div class="settings">
+        <label>Sensitivity: <span id="sensitivityValue">5</span></label>
+        <input type="range" id="sensitivity" min="1" max="10" value="5">
+        <label>Scroll Speed: <span id="speedValue">3</span></label>
+        <input type="range" id="scrollSpeed" min="1" max="10" value="3">
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>
+
