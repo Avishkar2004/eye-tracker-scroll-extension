@@ -27,3 +27,4 @@ Technical details:
 - Background service worker for extension coordination
 ```
 
+
