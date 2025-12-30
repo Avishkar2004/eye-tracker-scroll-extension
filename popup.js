@@ -1,8 +1,10 @@
-// Popup script - opens camera window for tracking
+// Popup script - controls tracking on the current page
 let sensitivity = 5;
 let scrollSpeed = 3;
+let isTracking = false;
 
 const startBtn = document.getElementById('startBtn');
+const stopBtn = document.getElementById('stopBtn');
 const status = document.getElementById('status');
 const sensitivitySlider = document.getElementById('sensitivity');
 const scrollSpeedSlider = document.getElementById('scrollSpeed');
@@ -20,26 +22,103 @@ function updateDebug(info) {
     console.log('Debug:', info);
 }
 
-// Start tracking - opens camera in separate window
+// Update UI state
+function updateUI(tracking) {
+    isTracking = tracking;
+    startBtn.disabled = tracking;
+    stopBtn.disabled = !tracking;
+    
+    if (tracking) {
+        status.textContent = 'Tracking active on current page';
+        status.className = 'status active';
+    } else {
+        status.textContent = 'Ready to start tracking';
+        status.className = 'status';
+    }
+}
+
+// Start tracking
 startBtn.addEventListener('click', async () => {
-    // Save current settings
+    // Save settings
     chrome.storage.sync.set({
         sensitivity: sensitivity,
         scrollSpeed: scrollSpeed
     });
     
-    // Open camera window
-    const cameraUrl = chrome.runtime.getURL('camera.html');
-    chrome.windows.create({
-        url: cameraUrl,
-        type: 'popup',
-        width: 700,
-        height: 600,
-        focused: true
+    // Get active tab
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    
+    if (!tab) {
+        status.textContent = 'Error: No active tab found';
+        return;
+    }
+    
+    // Send start message to content script
+    try {
+        await chrome.tabs.sendMessage(tab.id, {
+            action: 'start',
+            sensitivity: sensitivity,
+            scrollSpeed: scrollSpeed
+        });
+        
+        updateUI(true);
+        updateDebug('Tracking started on current page. Camera overlay should appear.');
+    } catch (error) {
+        console.error('Error starting tracking:', error);
+        status.textContent = 'Error: Could not start tracking. Make sure you\'re on a webpage.';
+        updateDebug(`Error: ${error.message}`);
+    }
+});
+
+// Stop tracking
+stopBtn.addEventListener('click', async () => {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    
+    if (tab) {
+        try {
+            await chrome.tabs.sendMessage(tab.id, { action: 'stop' });
+        } catch (error) {
+            console.error('Error stopping tracking:', error);
+        }
+    }
+    
+    updateUI(false);
+    updateDebug('Tracking stopped');
+});
+
+// Update settings in real-time
+function updateSettings() {
+    chrome.storage.sync.set({
+        sensitivity: sensitivity,
+        scrollSpeed: scrollSpeed
     });
     
-    status.textContent = 'Opening camera window...';
-    updateDebug('Camera window should open. Allow camera access when prompted.');
+    // Send to content script if tracking is active
+    if (isTracking) {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            if (tabs[0]) {
+                chrome.tabs.sendMessage(tabs[0].id, {
+                    action: 'updateSettings',
+                    sensitivity: sensitivity,
+                    scrollSpeed: scrollSpeed
+                }).catch(() => {});
+            }
+        });
+    }
+}
+
+// Update sensitivity
+sensitivitySlider.addEventListener('input', (e) => {
+    sensitivity = parseInt(e.target.value);
+    sensitivityValue.textContent = sensitivity;
+    updateSettings();
+});
+
+// Update scroll speed
+scrollSpeedSlider.addEventListener('input', (e) => {
+    scrollSpeed = parseInt(e.target.value);
+    speedValue.textContent = scrollSpeed;
+    updateSettings();
 });
 
 // Load saved settings
@@ -56,20 +135,20 @@ chrome.storage.sync.get(['sensitivity', 'scrollSpeed'], (items) => {
     }
 });
 
-// Update sensitivity
-sensitivitySlider.addEventListener('input', (e) => {
-    sensitivity = parseInt(e.target.value);
-    sensitivityValue.textContent = sensitivity;
-});
-
-// Update scroll speed
-scrollSpeedSlider.addEventListener('input', (e) => {
-    scrollSpeed = parseInt(e.target.value);
-    speedValue.textContent = scrollSpeed;
+// Check if tracking is active on current tab
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, { action: 'checkStatus' }).then(() => {
+            updateUI(true);
+        }).catch(() => {
+            updateUI(false);
+        });
+    }
 });
 
 // Initialize
 window.addEventListener('DOMContentLoaded', () => {
-    status.textContent = 'Ready to start tracking. Click "Start Tracking" to begin.';
-    updateDebug('Extension loaded. No external libraries required.');
+    status.textContent = 'Ready to start tracking on current page';
+    updateDebug('Extension loaded. Click "Start Tracking" to begin.');
+    updateUI(false);
 });

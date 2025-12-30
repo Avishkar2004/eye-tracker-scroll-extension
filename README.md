@@ -118,4 +118,3 @@ For more accurate eye tracking, you can download MediaPipe libraries locally:
 3. This provides more accurate eye landmark detection
 
 However, the current version should work well for basic up/down scrolling based on head movement.
-
