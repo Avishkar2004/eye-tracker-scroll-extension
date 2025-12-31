@@ -117,4 +117,4 @@ For more accurate eye tracking, you can download MediaPipe libraries locally:
 2. Update `popup.js` to load from local files instead of CDN
 3. This provides more accurate eye landmark detection
 
-However, the current version should work well for basic up/down scrolling based on head movement.
+However, the current version should work well for basic up/down scrolling based on head movement
