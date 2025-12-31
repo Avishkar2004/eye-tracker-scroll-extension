@@ -125,10 +125,10 @@ function processFrame() {
             const scrollAmount = Math.round(Math.abs(deltaY) * scrollSpeed * 80);
             
             if (deltaY > 0) {
-                smoothScrollDown(scrollAmount, 50); // Faster scroll duration (was 100ms)
+                smoothScrollDown(scrollAmount, 300); // Smooth scroll duration
                 if (statusEl) statusEl.textContent = '↓ Scrolling DOWN';
             } else {
-                smoothScrollUp(scrollAmount, 50); // Faster scroll duration (was 100ms)
+                smoothScrollUp(scrollAmount, 300); // Smooth scroll duration
                 if (statusEl) statusEl.textContent = '↑ Scrolling UP';
             }
             
@@ -217,38 +217,46 @@ function smoothScrollDown(amount, duration) {
     const start = window.pageYOffset;
     const distance = Math.min(amount, 200); // Increased max scroll per step (was 50)
     let startTime = null;
+    let animationId = null;
     
     function animation(currentTime) {
         if (startTime === null) startTime = currentTime;
         const timeElapsed = currentTime - startTime;
-        const run = easeInOutQuad(timeElapsed, start, distance, duration);
+        // Use smoother easing function
+        const run = easeOutCubic(timeElapsed, start, distance, duration);
         window.scrollTo(0, run);
         
         if (timeElapsed < duration) {
-            requestAnimationFrame(animation);
+            animationId = requestAnimationFrame(animation);
+        } else {
+            animationId = null;
         }
     }
     
-    requestAnimationFrame(animation);
+    animationId = requestAnimationFrame(animation);
 }
 
 function smoothScrollUp(amount, duration) {
     const start = window.pageYOffset;
     const distance = -Math.min(amount, 200); // Increased max scroll per step (was 50)
     let startTime = null;
+    let animationId = null;
     
     function animation(currentTime) {
         if (startTime === null) startTime = currentTime;
         const timeElapsed = currentTime - startTime;
-        const run = easeInOutQuad(timeElapsed, start, distance, duration);
+        // Use smoother easing function
+        const run = easeOutCubic(timeElapsed, start, distance, duration);
         window.scrollTo(0, run);
         
         if (timeElapsed < duration) {
-            requestAnimationFrame(animation);
+            animationId = requestAnimationFrame(animation);
+        } else {
+            animationId = null;
         }
     }
     
-    requestAnimationFrame(animation);
+    animationId = requestAnimationFrame(animation);
 }
 
 function easeInOutQuad(t, b, c, d) {
@@ -256,6 +264,13 @@ function easeInOutQuad(t, b, c, d) {
     if (t < 1) return c / 2 * t * t + b;
     t--;
     return -c / 2 * (t * (t - 2) - 1) + b;
+}
+
+// Smoother easing function (ease-out cubic) for more fluid scrolling
+function easeOutCubic(t, b, c, d) {
+    t /= d;
+    t--;
+    return c * (t * t * t + 1) + b;
 }
 
 // Listen for messages from popup
