@@ -9,6 +9,7 @@ A browser extension for Brave/Chrome that tracks your eye movement using your we
 - Adjustable sensitivity and scroll speed
 - Works on any website
 
+
 ## Installation
 
 1. **Download or clone this repository**
