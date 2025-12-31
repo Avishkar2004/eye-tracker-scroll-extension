@@ -7,7 +7,7 @@ let baselineY = null;
 let sensitivity = 5;
 let scrollSpeed = 3;
 let lastScrollTime = 0;
-const SCROLL_THROTTLE_MS = 100;
+const SCROLL_THROTTLE_MS = 50; // Reduced throttle for more responsive scrolling
 let overlay = null;
 let stream = null;
 
@@ -121,13 +121,14 @@ function processFrame() {
         
         const now = Date.now();
         if (Math.abs(deltaY) > threshold && (now - lastScrollTime) > SCROLL_THROTTLE_MS) {
-            const scrollAmount = Math.round(Math.abs(deltaY) * scrollSpeed * 20);
+            // Increased multiplier for faster scrolling (was 20, now 80)
+            const scrollAmount = Math.round(Math.abs(deltaY) * scrollSpeed * 80);
             
             if (deltaY > 0) {
-                smoothScrollDown(scrollAmount, 100);
+                smoothScrollDown(scrollAmount, 50); // Faster scroll duration (was 100ms)
                 if (statusEl) statusEl.textContent = '↓ Scrolling DOWN';
             } else {
-                smoothScrollUp(scrollAmount, 100);
+                smoothScrollUp(scrollAmount, 50); // Faster scroll duration (was 100ms)
                 if (statusEl) statusEl.textContent = '↑ Scrolling UP';
             }
             
@@ -214,7 +215,7 @@ function stopTracking() {
 // Smooth scrolling functions
 function smoothScrollDown(amount, duration) {
     const start = window.pageYOffset;
-    const distance = Math.min(amount, 50);
+    const distance = Math.min(amount, 200); // Increased max scroll per step (was 50)
     let startTime = null;
     
     function animation(currentTime) {
@@ -233,7 +234,7 @@ function smoothScrollDown(amount, duration) {
 
 function smoothScrollUp(amount, duration) {
     const start = window.pageYOffset;
-    const distance = -Math.min(amount, 50);
+    const distance = -Math.min(amount, 200); // Increased max scroll per step (was 50)
     let startTime = null;
     
     function animation(currentTime) {
